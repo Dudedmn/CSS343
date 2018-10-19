@@ -1,0 +1,330 @@
+/*
+Author: Daniel Yan
+Purpose: Testing cpp that contains all testing functions and main() for turtleprogram.cpp
+
+Included functions:
+sampleTest() - Exact copy of providede sample
+expandedSampleTest() - Expands basic sample testing
+constructorTest() - Tests all constructors
+booleanTest() - Tests multiple boolean scenarios
+getterSetterTest() - Tests multiple index scenarios, including errors
+operatorAssignmentTest() - Tests multiple = scenarios
+operatorPlusTest() - Tests multiple += scenarios
+operatorPlusEqualTest() - Tests multiple += scenarios
+operatorMultiplyTest() - Tests multiple * scenarios
+operatorMultiplyEqualTest() - Tests multiple *= scenarios
+main() - Runs all the tests
+
+*/
+#include <iostream>
+#include "turtleprogram.h"
+using namespace std;
+
+//Tests
+/*
+	Purpose: Tests turtleprogram.cpp constructors
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+
+void constructorTest() {
+	//Testing each constructor one at a time
+	TurtleProgram tp1;
+	TurtleProgram tp2("20");
+	TurtleProgram tp3("F", "20");
+	TurtleProgram tp4(tp2);
+	std::cout << "tp1: " << tp1 << std::endl;
+	std::cout << "tp2: " << tp2 << std::endl;
+	std::cout << "tp3: " << tp3 << std::endl;
+	std::cout << "tp4: " << tp4 << std::endl;
+}
+/*
+	Purpose: Tests turtleprogram.cpp booleans
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+
+void booleanTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4(tp2), tp5;
+	//Testing simple equal or inequal booleans
+	std::cout << "are tp1 and tp1 equal to each other: " << (tp1 == tp1) << std::endl;
+	std::cout << "are tp1 and tp2 equal to each other: " << (tp1 == tp2) << std::endl;
+	std::cout << "are tp2 and tp3 equal to each other: " << (tp2 == tp3) << std::endl;
+	std::cout << "are tp3 and tp4 inequal to each other: " << (tp3 != tp4) << std::endl;
+	std::cout << "are tp4 and tp2 equal to each other: " << (tp4 == tp2) << std::endl;
+	std::cout << "are tp5 and tp1 equal to each other: " << (tp5 == tp1) << std::endl;
+}
+/*
+	Purpose: Tests turtleprogram.cpp getters and setters
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void getterSetterTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4(tp2), tp5("Some", "Test");
+	std::cout << "getting index of tp2 at 0" << tp2.getIndex(0) << std::endl;
+	std::cout << "getting index of tp3 at 0" << tp3.getIndex(0) << std::endl;
+	std::cout << "getting index of tp2 at 0" << tp2.getIndex(0) << std::endl;
+	std::cout << "getting index of tp3 at 1" << tp3.getIndex(1) << std::endl;
+	std::cout << "tp4: " << tp4 << std::endl;
+	std::cout << "tp5: " << tp5 << std::endl;
+	std::cout << "setting tp4's index 0 to G" << std::endl;
+	tp4.setIndex(0, "G");
+	std::cout << "tp4: " << tp4 << std::endl;
+	std::cout << "setting tp5's index 1 to X" << std::endl;
+	tp5.setIndex(1, "X");
+	//Testing multiple get and set index at once
+	std::cout << "tp1: " << tp1 << std::endl;
+	std::cout << "setting tp2's 0 index to tp3's 1 index " << std::endl;
+	tp2.setIndex(0, tp3.getIndex(1));
+
+
+
+}
+
+/*
+	Purpose: Tests turtleprogram.cpp multiple = operations
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void operatorAssignmentTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4("else", "some"), tp5("Some", "Test");
+	std::cout << "tp5: " << tp5 << std::endl;
+	//Self assignment check
+	tp5 = tp5;
+	tp1 = tp2;
+	//Multiple assignment check
+	std::cout << "setting tp1 to tp2: " << tp1 << std::endl;
+	tp1 = tp5;
+	std::cout << "setting tp1 to tp5: " << tp1 << std::endl;
+	tp2 = tp3 = tp4;
+	std::cout << "tp2: " << tp2 << std::endl;
+	std::cout << "tp3: " << tp3 << std::endl;
+	std::cout << "tp4: " << tp4 << std::endl;
+	std::cout << "tp5: " << tp5 << std::endl;
+	tp3 = tp4 = tp5;
+	std::cout << "tp2: " << tp2 << std::endl;
+	std::cout << "tp3: " << tp3 << std::endl;
+	std::cout << "tp4: " << tp4 << std::endl;
+
+}
+/*
+	Purpose: Tests turtleprogram.cpp multiple + operations
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void operatorPlusTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4("else", "some"), tp5("Some", "Test"), tp6;
+	std::cout << "tp1 = tp2 + tp3: ";  tp1 = tp2 + tp3;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp1 = tp4 + tp5: "; tp1 = tp4 + tp5;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp1 = tp2 + tp6: "; tp1 = tp2 + tp6;
+	std::cout << tp1 << std::endl;
+	//Testing self addition
+	std::cout << "tp6 = tp6 + tp6: ";  tp6 = tp6 + tp6;
+	std::cout << tp6 << std::endl;
+	std::cout << "tp2 = tp2 + tp2: "; tp2 = tp2 + tp2;
+	std::cout << tp2 << std::endl;
+
+}
+/*
+	Purpose: Tests turtleprogram.cpp multiple += operations
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void operatorPlusEqualTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4("else", "some"), tp5("Some", "Test"), tp6, tp7("one");
+	std::cout << "tp1 += tp2: ";  tp1 += tp2;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp1 += tp4: "; tp1 += tp4;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp1 += tp6: "; tp1 += tp6;
+	std::cout << tp1 << std::endl;
+	//Testing self addition
+	std::cout << "tp6 += tp6 += tp6: ";  tp6 += tp6 += tp6;
+	std::cout << tp6 << std::endl;
+	std::cout << "tp2 += tp2 += tp2: ";  tp2 += tp2 += tp2;
+	std::cout << tp2 << std::endl;
+	//Combo operators
+	std::cout << "tp6 += tp3 + tp7"; tp6 += tp3 + tp7;
+	std::cout << tp6 << std::endl;
+}
+/*
+	Purpose: Tests turtleprogram.cpp multiple * operations
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void operatorMultiplyTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4("else", "some"), tp5("Some", "Test"), tp6;
+	std::cout << "tp1 = tp1 * 3: ";  tp1 = tp1 * 3;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp1 = tp2 * 2: "; tp1 = tp2 * 2;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp1 = tp3 * 5: "; tp1 = tp3 * 5;
+	std::cout << tp1 << std::endl;
+	//Testing invalid ranges
+	std::cout << "tp1 = tp1 * -2: ";  tp1 = tp1 * -2;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp2 = tp2 * 0 "; tp2 = tp2 * 0;
+	std::cout << tp2 << std::endl;
+}
+/*
+	Purpose: Tests turtleprogram.cpp multiple *= operations
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void operatorMultiplyEqualTest() {
+	TurtleProgram tp1, tp2("20"), tp3("F", "20"), tp4("else", "some"), tp5("Some", "Test"), tp6;
+	std::cout << "tp1 = tp1 *= 3: ";  tp1 = tp1 *= 3;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp2 = tp2 *= 2: "; tp2 = tp2 *= 2;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp3 = tp2 *= 2: "; tp3 = tp2 * 2;
+	std::cout << tp3 << std::endl;
+	std::cout << "tp1 = tp4 *= 2"; tp1 = tp4 * 2;
+	std::cout << tp1 << std::endl;
+	//Testing invalid ranges
+	std::cout << "tp1 = tp5 *= -2: ";  tp1 = tp5 * -2;
+	std::cout << tp1 << std::endl;
+	std::cout << "tp2 = tp2 *= 0 "; tp2 = tp2 * 0;
+	std::cout << tp2 << std::endl;
+}
+
+/*
+	Purpose: Tests turtleprogram.cpp to a basic level, sames as sample
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void sampleTest() {
+	TurtleProgram tp1;
+	cout << "tp1: " << tp1 << endl;
+	TurtleProgram tp2("F", "10");
+	cout << "tp2: " << tp2 << endl;
+	TurtleProgram tp3("R", "90");
+	tp1 = tp2 + tp3;
+	cout << "tp1 now as tp2+tp3: " << tp1 << endl;
+
+	tp1 = tp2 * 3;
+	cout << "tp1 now as tp2 * 3: " << tp1 << endl;
+	TurtleProgram tp4(tp1);
+	cout << "tp4 is a copy of tp1: " << tp4 << endl;
+	TurtleProgram tp5("F", "10");
+	cout << "tp5: " << tp5 << endl;
+	cout << boolalpha;
+	cout << "tp2 and tp5 are == to each other: " << (tp2 == tp5) << endl;
+	cout << "tp2 and tp3 are != to each other: " << (tp2 != tp3) << endl;
+	cout << "index 0 of tp2 is " << tp2.getIndex(0) << endl;
+	tp2.setIndex(0, "R");
+	tp2.setIndex(1, "90");
+	cout << "tp2 after 2 calls to setIndex: " << tp2 << endl;
+	cout << "tp2 and tp3 are == to each other: " << (tp2 == tp3) << endl;
+	//need to write additional tests for += *=
+	cout << "Done." << endl;
+
+}
+
+/*
+	Purpose: Tests turtleprogram.cpp with all necessary tests, expanded from sample
+	Pre-condition: None
+	Post-condition: Runs all tests successfully
+	@param None
+*/
+void expandedSampleTest() {
+	cout << "\nStarting expanded Sample Testing" << endl;
+	TurtleProgram tp1;
+	cout << "tp1: " << tp1 << endl;
+	TurtleProgram tp2("F", "10");
+	cout << "tp2: " << tp2 << endl;
+	TurtleProgram tp3("R", "90");
+	cout << "tp3: " << tp3 << endl;
+	tp1 = tp2 + tp3;
+	cout << "tp1 now as tp2+tp3: " << tp1 << endl;
+	tp1 = tp2 * 3;
+	cout << "tp1 now as tp2 * 3: " << tp1 << endl;
+	TurtleProgram tp4(tp1);
+	cout << "tp4 is a copy of tp1: " << tp4 << endl;
+	TurtleProgram tp5("F", "10");
+	cout << "tp5: " << tp5 << endl;
+	cout << boolalpha;
+	cout << "tp2 and tp5 are == to each other: " << (tp2 == tp5) << endl;
+	cout << "tp2 and tp3 are != to each other: " << (tp2 != tp3) << endl;
+	cout << "index 0 of tp2 is " << tp2.getIndex(0) << endl;
+	tp2.setIndex(0, "R");
+	tp2.setIndex(1, "90");
+	cout << "testing invalid sets and gets: " << endl;
+	tp2.setIndex(999, "90");
+	tp2.setIndex(-999, "90");
+	tp2.getIndex(999);
+	tp2.getIndex(-999);
+	cout << "tp2 after 2 calls to setIndex: " << tp2 << endl;
+	cout << "tp2 and tp3 are == to each other: " << (tp2 == tp3) << endl;
+	cout << "Tests for single parameters " << endl;
+	TurtleProgram tp6("single");
+	TurtleProgram tp7("one");
+	TurtleProgram tp8(tp6);
+	cout << "tp6: " << tp6 << endl;
+	cout << "tp7: " << tp7 << endl;
+	cout << "tp8: " << tp8 << endl;
+	tp6 = tp6 + tp7;
+	cout << "tp6 now as tp6+tp7: " << tp6 << endl;
+	tp8 += tp7;
+	cout << "tp8 now as tp8+=tp7: " << tp8 << endl;
+	cout << "tp6 and tp8 are == to each other: " << (tp6 == tp8) << endl;
+	TurtleProgram tp9;
+	cout << "tp9: " << tp9 << endl;
+	tp9 = tp8 * 3;
+	cout << "tp9 as now tp8 * 3: " << tp9 << endl;
+	TurtleProgram tp10;
+	cout << "tp10: " << tp10 << endl;
+	tp10 = tp6 *= 3;
+	cout << "tp10 as now tp6 *= 3" << tp10 << endl;
+	cout << "tp9 and tp10 are == to each other: " << (tp9 == tp10) << endl;
+	TurtleProgram tp11;
+	cout << "tp11: " << tp11 << endl;
+	tp11 = tp2 * 2;
+	cout << "tp11 as tp2 * 2: " << tp11 << endl;
+	tp11 *= 2;
+	cout << "tp11 as tp11 *= 2" << tp11 << endl;
+	TurtleProgram tp12("singleOne");
+	TurtleProgram tp13("anotherOne");
+	cout << "tp12: " << tp12 << endl;
+	cout << "tp13: " << tp13 << endl;
+	tp12 = tp12 * 0;
+	cout << "tp12: " << tp12 << endl;
+	tp13 *= 0;
+	cout << "tp13: " << tp13 << endl;
+	cout << "Complete\n." << endl;
+
+}
+
+/*
+	Purpose: Run all testing functions for turtleprogram.cpp
+	Pre-condition: None
+	Post-condition: All testing functions ran successfully for turtleprogram.cpp
+	@params None
+*/
+int main() {
+
+	sampleTest();
+	expandedSampleTest();
+	constructorTest();
+	booleanTest();
+	getterSetterTest();
+	operatorAssignmentTest();
+	operatorPlusTest();
+	operatorPlusEqualTest();
+	operatorMultiplyTest();
+	operatorMultiplyEqualTest();
+	return 0;
+}
+
+
