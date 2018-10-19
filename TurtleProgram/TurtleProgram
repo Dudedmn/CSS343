@@ -1,0 +1,382 @@
+/*
+Author: Daniel Yan
+
+Purpose:
+-Implementation file for turtleprogram.h
+-Implements all functions for turtleprogram.h
+
+Implemented functions:
+Constructors
+TurtleProgram();
+TurtleProgram(string&);
+TurtleProgram(string&, string&);
+TurtleProgram(TurtleProgram&);
+~TurtleProgram();
+
+Getters and Setters
+getLength();
+getIndex(int);
+setIndex(int, string&);
+
+Operator overloads
+operator==(TurtleProgram&);
+operator!=(TurtleProgram&)
+operator=(TurtleProgram&)
+operator<<(oStream&,TurtleProgram&);
+operator+(TurtleProgram&);
+operator+=(TurtleProgram&);
+operator*(int);
+operator*=(int);
+
+
+Refer to turtleprogram.h for a brief descriptor of all implemented functions
+
+*/
+#include "turtleprogram.h"
+
+/*
+	Purpose: Empty constructor for string array initialization
+	Pre-condition: None
+	Post-condition: string array is initialized with a specified int size of 0
+	@param None
+	A single element is used to avoid memory leakage errors.
+	int size is made 0 as the actual array size should still be 0
+
+*/
+TurtleProgram::TurtleProgram() {
+
+}
+/*
+	Purpose: Single string parameter constructor for string array initialization
+	Pre-condition: None
+	Post-condition: string array is initialized with a specified int size of 1
+	@param string - Any valid string input
+	const is used as string inputs are not modified
+	int size is incremented by 1 to reflect the array size
+*/
+TurtleProgram::TurtleProgram(const std::string &input) {
+	turtleArray = new std::string[1];
+	*turtleArray = input;
+	//increment private int data type to keep track of string array size
+	size++;
+}
+/*
+	Purpose: Two string parameter constructor for string array initialization
+	Pre-condition: None
+	Post-condition: string array is initialized with a specified int size of 2
+	@param string - Any valid string input for both
+	const is used as string inputs are not modified
+	size is incremented by 2 to reflect array size
+*/
+TurtleProgram::TurtleProgram(const std::string &fInput, const std::string &sInput) {
+	turtleArray = new std::string[2];
+	*turtleArray = fInput;
+	//move the pointer up by one position
+	*(turtleArray + 1) = sInput;
+	//increment private int data type to keep track of string array size for respective string inputs
+	size += 2;
+}
+/*
+	Purpose: Copy constructor for string array initialization
+	Pre-condition: None
+	Post-condition: string array is initialized with int size and string elements equal
+	to passed in TurtleProgram object
+	@param TurtleObject- Valid TurtleProgram object
+	const is used as TurtleProgram object is not modified
+*/
+TurtleProgram::TurtleProgram(const TurtleProgram &tp) {
+	//delete is not used here as no certainty *this TurtleProgram exists
+	//Resizes the string array
+	size = tp.getLength();
+	//creates a new string array to the length of the one passed in
+	turtleArray = new std::string[tp.getLength()];
+
+	//Copies all values from passed in array to *this array
+	for (int i = 0; i < tp.getLength(); i++) {
+		turtleArray[i] = tp.turtleArray[i];
+	}
+
+}
+/*
+	Purpose: Deconstructor to delete user defined arrays or objects
+	Pre-condition: None
+	Post-condition: All user defined items are deleted out of scope
+	@param None
+	Cleans up stack and heap memory
+*/
+TurtleProgram::~TurtleProgram() {
+	//Deletes all user defined turtleArray
+	delete[] turtleArray;
+}
+
+//Getters and Setters
+
+/*
+	Purpose: Getter to get the index of a string array
+	Pre-condition: string array has been initialized
+	Post-condition: returns an string from the string array
+	@param int - Valid integer index that is within the string array
+	const is used as no modifcation happens in the function
+*/
+std::string& TurtleProgram::getIndex(int index) const {
+	//Try catch block is an attempt to silence exceptions
+	try {
+		//Defining valid int ranges (not negative or over size)
+		if (index < getLength() && index >= 0) {
+			return turtleArray[index];
+		}
+		//Exception handling attempt
+		else {
+			throw std::out_of_range("Index out of bounds");
+		}
+	}
+	//Catch to simply ignore exceptions
+	catch (std::exception&) {
+
+	}
+}
+/*
+	Purpose: Getter to get the length of a string array
+	Pre-condition: string array has been initialized
+	Post-condition: returns an int size for string array length
+	@param None
+	const is used as no modifcation happens in the function
+	One line used for easier readibility
+*/
+int TurtleProgram::getLength() const { return size; }
+/*
+	Purpose: Setter to set the index of a string array
+	Pre-condition: string array has been initialized
+	Post-condition: Changes an index value to another string
+	@param int - Valid integer index that is within the string array
+	@param string - Valid string
+	const is used as the passed in string is not modified
+*/
+
+void TurtleProgram::setIndex(int index, const std::string & str) {
+	//Try catch is used as an attempt to silence exceptions
+	try {
+		//Checking if passed in index is valid or not
+		if (index < getLength() && index >= 0) {
+			turtleArray[index] = str;
+		}
+		//Exception handling attempt
+		else {
+			throw std::out_of_range("Index is out of bounds");
+			return;
+		}
+	}
+	//Catch to ignore exception
+	catch (std::exception&) {
+
+	}
+}
+//Operator Overloading
+
+/*
+	Purpose: Overloading operator to check for equality between TurtleProgram
+	objects
+	Pre-condition: *this is a TurtleProgram object
+	Post-condition: Boolean value is returned to check equality
+	@param TurtleProgram - Valid TurtleProgram object
+	const is used as the passed in TurtleProgram object is not modified
+	no modifications occur in the function
+*/
+bool TurtleProgram::operator==(const TurtleProgram &t) const {
+	//Keeps track of boolean for each string element
+	bool equals = true;
+	//Checks if lengths are equal or not
+	if (getLength() == t.getLength()) {
+		//Iterates through each string element
+		for (int i = 0; i < getLength(); i++) {
+			//If any string elements don't equal set boolean to false
+			if (turtleArray[i] != t.turtleArray[i]) {
+				equals = false;
+			}
+		}
+
+	}
+	//Length is not equal
+	else {
+		equals = false;
+	}
+	//If everything is equal, return true
+	return equals;
+}
+/*
+	Purpose: Overloading operator to check for inequality between TurtleProgram
+	objects
+	Pre-condition: *this is a TurtleProgram object
+	Post-condition: Boolean value is returned to check inequality
+	@param TurtleProgram - Valid TurtleProgram object
+	const is used as the passed in TurtleProgram object is not modified
+	no modifications occur in the function
+*/
+bool TurtleProgram::operator!=(const TurtleProgram  &t) const {
+	//Booleans are reversed compared to == operator
+	bool equals = false;
+	//Check to see if lengths are equal
+	if (getLength() == t.getLength())
+	{
+		//Iterates through each string element
+		for (int i = 0; i < getLength(); i++) {
+			//If an element is not equal, return true
+			if (turtleArray[i] != t.turtleArray[i]) {
+				equals = true;
+			}
+		}
+
+	}
+	//If lengths differ, return true
+	else {
+		equals = true;
+	}
+	//If everything is equal, return false
+	return equals;
+}/*
+		Purpose: Overloading operator to assign a TurtleProgram	object
+		to another
+		Pre-condition: *this is a TurtleProgram object
+		Post-condition: *this TurtleProgram is changed to passed in one in all aspects
+		@param TurtleProgram - Valid TurtleProgram object
+		const is used as the passed in TurtleProgram object is not modified
+*/	
+TurtleProgram &TurtleProgram::operator=(const TurtleProgram &tp) {
+	//Self-assignment checking
+	if (this == &tp) {
+		//Returns itself if found
+		return *this;
+	}
+	//Deletes *this array 
+	delete[] turtleArray;
+	//Rearranges size of string array
+	size = tp.getLength();
+	//Creates a new string array
+		turtleArray = new std::string[tp.getLength()];
+	for (int i = 0; i < tp.getLength(); i++) {
+		//Copies over all values from passed in string array
+		turtleArray[i] = tp.turtleArray[i];
+	}
+	//Returns this object which is modified
+	return *this;
+}
+/*
+	Purpose: Overloading operator to add a TurtleProgram object to another
+	Pre-condition: *this is a TurtleProgram object
+	Post-condition: A TurtleProgram is added to the passed in one in all aspects
+	@param TurtleProgram - Valid TurtleProgram object
+	const is used as the passed in TurtleProgram object is not modified
+	no modifications occur in this function to *this
+*/
+
+TurtleProgram TurtleProgram::operator+(const TurtleProgram &tp) const {
+	//Dummy TurtleProgram object to be returned
+	TurtleProgram newTurtle;
+	//Ensure no prior initialization has occurred
+//	delete[] newTurtle.turtleArray;
+	//Resize string array
+
+	newTurtle.size = getLength() + tp.getLength();
+	//Create a new string array
+		newTurtle.turtleArray = new std::string[newTurtle.getLength()];
+	//Iterates through *this TurtleProgram
+	for (int i = 0; i < getLength(); i++) {
+		//Copy over *this TurtleProgram array values
+		newTurtle.setIndex(i, getIndex(i));
+	}
+	//Iterates through passed in TurtleProgram
+	for (int i = getLength(); i < newTurtle.getLength(); i++) {
+		//Copy over passed in TurtleProgram array values
+		newTurtle.setIndex(i, tp.getIndex(i - getLength()));
+	}
+	//Return dummy TurtleProgram
+	return newTurtle;
+}
+/*
+	Purpose: Overloading operator to append a TurtleProgram object
+	to another
+	Pre-condition: *this is a TurtleProgram object
+	Post-condition: *this TurtleProgram is added to the passed in one in all aspects
+	@param TurtleProgram - Valid TurtleProgram object
+	const is used as the passed in TurtleProgram object is not modified
+*/
+TurtleProgram &TurtleProgram::operator+=(const TurtleProgram &t) {
+	//Simply uses operator+ overloading to append objects
+	//Given x += y is the same as x = y + x;
+	*this = *this + t;
+	//Returned modified *this object
+	return *this;
+}
+/*
+	Purpose: Overloading operator to multiply a TurtleProgram object by an int
+	Pre-condition: *this is a TurtleProgram object
+	Post-condition: A TurtleProgram is repeated by the specified multiplier
+	@param int - Repeats current elements in string array based on size
+	const is used no modifications occur in this function to *this
+*/
+TurtleProgram TurtleProgram::operator*(int multiplier) const {
+	//Create a dummy TurtleProgram object
+	TurtleProgram tp;
+	//Attempt to silence exceptions
+	try {
+		//Add *this object value to dummy TurtleProgram multiple times
+		for (int i = 0; i < multiplier; i++) {
+			tp += *this;
+		}
+	}
+	//Ignore caught exceptions
+	catch (std::exception &) {
+
+	}
+	//Return dummy TurtleProgram object
+	return tp;
+}
+/*
+	Purpose: Overloading operator to multiply a TurtleProgram object by an int
+	Pre - condition : *this is a TurtleProgram object
+	Post - condition : *this TurtleProgram is repeated by the specified multiplier
+	@param int - Repeats current elements in string array based on size
+*/
+TurtleProgram &TurtleProgram::operator*=(int multiplier) {
+	//Attempt to ignore exceptions
+	try {
+		//Essnetially same thing as +=, just using *
+		//Given x *= y is x = y * x
+		//Modifies *this object
+		*this = (*this * multiplier);
+	}
+	//Ignore caught exceptions
+	catch (std::exception&) {
+
+	}
+	//Return modified *this object
+	return *this;
+}
+/*
+	Purpose: Allow printing for TurtleProgram objects
+	Pre-condition: None
+	Post-condition: None
+	@param ostream - Out stream object to be returned
+	@param TurtleProgram - Valid TurtleProgram object
+	friend keyword allows operator overload to access private variables, also prevents
+	<< operator overloading from having issues with access
+*/
+std::ostream& operator<<(std::ostream& os, const TurtleProgram& tp) {
+	//Print the first square bracket
+	os << "[";
+			for (int i = 0; i < tp.getLength(); i++) {
+				//Check if it's the last element
+				if (i == tp.getLength() - 1) {
+					//Print element with no spaces
+					os << tp.getIndex(i);
+				}
+				else {
+					//Print element with a space
+					os << tp.getIndex(i) << " ";
+				}
+			}
+	//Print second square bracket
+	os << "]";
+	//Return out stream object
+	return os;
+}
