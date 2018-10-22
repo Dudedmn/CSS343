@@ -1,0 +1,449 @@
+#include "binarysearchtree.h"
+//@author : Daniel Yan
+//@date : October 17, 2018
+//Implementation for binarysearchtree.h
+
+/*
+Constructor which initializes rootPtr to nullptr.
+@params - none
+*/
+template<class ItemType>
+BinarySearchTree<ItemType>::BinarySearchTree() : rootPtr(nullptr) {
+}
+
+/*
+Desconstructor which calls destroyTree() which deletes all nodes not set to nullptr.
+@params - none
+*/
+template<class ItemType>
+BinarySearchTree<ItemType>::~BinarySearchTree() {
+	destroyTree(this->rootPtr);
+}
+
+/*
+Single parameter constructor to set the rootPtr item equivalent to the passed in param
+@param - ItemType | Contains the item for the rootPtr 
+*/
+template<class ItemType>
+BinarySearchTree<ItemType>::BinarySearchTree(const ItemType &rootItem) {
+	if (rootPtr != nullptr) {
+		this->rootPtr->setItem(rootItem);
+	}
+	else {
+		//cannot set an item to a nullptr
+		BinaryNode<ItemType> *newNode = new BinaryNode<ItemType>(rootItem);
+		rootPtr = newNode;
+	}
+}
+
+/*
+Copy constructor which copies all the nodes from the passed in BinarySearchTreem
+through a post-order traversal
+@param - BinarySearchTree | Templatized Binary Search Tree to copy the nodes from
+*/
+template<class ItemType>
+BinarySearchTree<ItemType>::BinarySearchTree(const BinarySearchTree<ItemType> &bst) {
+	this->rootPtr = copyTree(bst.getRoot());
+}
+/*
+Helper method for deconstructor and clear() method which deletes all nodes that are not nullptr
+through a post-order traversal
+@param - BinaryNode | pointer to the root of the BinarySearchTree to delete
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::destroyTree(BinaryNode<ItemType> *subTreePtr) {
+	//Checks if the node is nullptr
+	if (subTreePtr != nullptr) {
+		//Uses a post-order traversal to delete all children before root
+		destroyTree(subTreePtr->getLeftChildPtr());
+		destroyTree(subTreePtr->getRightChildPtr());
+		delete subTreePtr;
+	}
+}
+
+/*
+Helper method to minimize privacy leaks from accessing rootPtr
+@param - none
+*/
+template<class ItemType>
+BinaryNode<ItemType>* BinarySearchTree<ItemType>::getRoot() const {
+	return this->rootPtr;
+}
+/*
+Copy method which uses a pre-order traversal in copying all nodes from a pointer
+@param - BinaryNode | rootPtr of the BinarySearchTree to be copied
+*/
+template<class ItemType>
+BinaryNode<ItemType> *BinarySearchTree<ItemType>::copyTree(const BinaryNode<ItemType> *treePtr) const {
+	//BinaryNode on the stack
+	BinaryNode<ItemType> *newTreePtr = nullptr;
+	if (treePtr != nullptr) {
+		//if the root isn't null, then create a new node on heap
+		newTreePtr = new BinaryNode<ItemType>(treePtr->getItem());
+		//pre-order traversal
+		newTreePtr->setLeftChildPtr(copyTree(treePtr->getLeftChildPtr()));
+		newTreePtr->setRightChildPtr(copyTree(treePtr->getRightChildPtr()));
+	}
+	//return a nullptr if the tree is empty
+	return newTreePtr;
+}
+/*
+Helper boolean method to determine if a tree is empty
+@param - none
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::isEmpty() const {
+	//ternary operator to see if rootPtr is nullptr or not
+	return (this->rootPtr == nullptr) ? true : false;
+}
+
+/*
+Gets the height of the tree, determines which subtree contains the larger height
+@param - none
+*/
+template<class ItemType>
+int BinarySearchTree<ItemType>::getHeight() const {
+	//starts from the rootPtr of the tree
+	return getHeightHelper(this->rootPtr);
+}
+
+/*
+Helper method for getHeight(). Determines which subtree has a larger height and returns the tree height
+@param - BinaryNode | rootPtr to the Binary Search Tree
+*/
+template<class ItemType>
+int BinarySearchTree<ItemType>::getHeightHelper(BinaryNode<ItemType> *subTreePtr) const {
+	if (subTreePtr == nullptr) {
+		return 0;
+	}
+	else {
+		//if leftChild height >= rightChild height, return leftChild + 1. Otherwise return rightChild + 1.
+		//acts like a max() function. Pre-order traversal
+		return (getHeightHelper(subTreePtr->getLeftChildPtr()) >= getHeightHelper(subTreePtr->getRightChildPtr()) ?
+			getHeightHelper(subTreePtr->getLeftChildPtr()) : getHeightHelper(subTreePtr->getRightChildPtr())) + 1;
+	}
+}
+
+/*
+Counts the number of nodes preent within the tree
+@param - none
+*/
+template<class ItemType>
+int BinarySearchTree<ItemType>::getNumberOfNodes() const {
+	//Starts from the rootPtr of the tree
+	return getNumberOfNodesHelper(this->rootPtr);
+}
+
+/*
+Helper method for getNumberOfNodes() Coutns the number of nodes through a pre-order traversal
+@param - BinaryNode | rootPtr to the tree to count
+*/
+template<class ItemType>
+int BinarySearchTree<ItemType>::getNumberOfNodesHelper(BinaryNode<ItemType> *subTreePtr) const {
+	if (subTreePtr == nullptr) {
+		return 0;
+	}
+	else {
+		//Iterates through all the left childs, then right, and adds the int together
+		//Acts the same as getHeightHelper() method for counting
+		return (getNumberOfNodesHelper(subTreePtr->getLeftChildPtr())
+			+ getNumberOfNodesHelper(subTreePtr->getRightChildPtr())) + 1;
+	}
+}
+
+/*
+Adds a node containing an ItemType to a Binary Search Tree
+@param - ItemType | Item to add
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::add(const ItemType &item) {
+	//Checks if the current tree already contains the item
+	if (!contains(item)) {
+		//Counts the prior size of the tree
+		int priorSize = this->getNumberOfNodes();
+		//New BinaryNode is created on the heap
+		BinaryNode<ItemType> *newNode = new BinaryNode<ItemType>(item);
+		//call helper placeNode() to determine where to add the node
+		rootPtr = placeNode(rootPtr, newNode);
+		//Checking if size has changed
+		if (priorSize < this->getNumberOfNodes()) {
+			return true;
+		}
+	}
+
+	//tree already contains item
+	return false;
+
+}
+/*
+Deletes all nodes from a tree and sets rootPtr to nullptr
+@param - none
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::clear() {
+	destroyTree(this->rootPtr);
+	this->rootPtr = nullptr;
+}
+
+/*
+Calls findNode() to determine if the tree contains an item, returns true if found
+@param - ItemType | Item to find
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::contains(const ItemType &item) const {
+	return (findNode(this->rootPtr, item) != nullptr) ? true : false;
+}
+
+/*
+Places a node following the conventions of a Binary Search Tree
+@param - BinaryNode | root node of the tree to place 
+@param - BinaryNode | new node to place insert
+*/
+template<class ItemType>
+BinaryNode<ItemType> *BinarySearchTree<ItemType>::placeNode(BinaryNode<ItemType> *subTreePtr,
+	BinaryNode<ItemType> *newNodePtr) {
+	//if root is null, add the new node to the location
+	if (subTreePtr == nullptr) {
+		return newNodePtr;
+	}
+
+	else {
+		//if the current item is less then the inserted item, place the node on the right
+		if (subTreePtr->getItem() < newNodePtr->getItem()) {
+				subTreePtr->setRightChildPtr(placeNode(subTreePtr->getRightChildPtr(), newNodePtr));
+			}
+		//place the node on the left side if the current item is greater
+		else if (subTreePtr->getItem() > newNodePtr->getItem()) {
+				subTreePtr->setLeftChildPtr(placeNode(subTreePtr->getLeftChildPtr(), newNodePtr));
+			} 
+			//subTreePtr->getItem() == newNodePtr->getItem()
+		else {
+				return subTreePtr;
+			}
+		}
+}  // end placeNode
+
+/*
+Finds a node in a tree utilizing pre-order traversal
+@param BinaryNode | rootPtr to a tree
+@param ItemType | Item to find
+*/
+template<class ItemType>
+BinaryNode<ItemType> *BinarySearchTree<ItemType>::findNode(BinaryNode<ItemType> *subTreePtr,
+	const ItemType &target) const {
+	//If the rootPtr is nullptr, return nullptr
+	if (subTreePtr == nullptr) {
+		return nullptr;
+	}
+	else {
+		//If the root is the item, return root
+		if (subTreePtr->getItem() == target) {
+			return subTreePtr;
+		}
+		//Traverse all the left side of a tree
+		else if (target < subTreePtr->getItem()) {
+			return findNode(subTreePtr->getLeftChildPtr(), target);
+		}
+		//Traversse all the right side of a tree
+		else if (target > subTreePtr->getItem()) {
+			return findNode(subTreePtr->getRightChildPtr(), target);
+		}
+
+	}
+
+}  // end findNode
+
+   /*
+   In order traversal which uses a function as a parameter to visit a given node
+   No lambda functions should be required here
+   @param vois visit(ItemType &) | function to visit a node and the item inside
+   */
+template<class ItemType>
+void BinarySearchTree<ItemType>::inorderTraverse(void visit(ItemType &)) const {
+	inorderTraverseHelper(this->rootPtr, visit);
+}  // end inorder
+
+
+/*
+Helper function for inorderTraverse which traverses the tree using in-order
+@param BinaryNode | rootPtr to a tree
+@param void visit(ItemType &) | function parameter to visit a node in the tree
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::inorderTraverseHelper(BinaryNode<ItemType> *subTreePtr, void visit(ItemType &)) const {
+	if (subTreePtr != nullptr) {
+		//recursively goes all the left children
+		inorderTraverseHelper(subTreePtr->getLeftChildPtr(), visit);
+		//assigns ItemType item to the current node's item
+		ItemType item = subTreePtr->getItem();
+		//visits the item here, this is also the root visit for in-order
+		visit(item);
+		//recursively goes all to the right children
+		inorderTraverseHelper(subTreePtr->getRightChildPtr(), visit);
+	}
+}
+
+/*
+Rebalances the tree utilizing readTree() to a balanced tree
+@param - none
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::rebalance() {
+	//Dynamically assigned ItemType array dependent on current tree size
+	ItemType *treeArray = new ItemType[this->getNumberOfNodes()];
+	//An int variable is needed as fillArray() uses an int reference
+	int index = 0;
+	//fills the array with the current tree nodes using pre-order traversal
+	this->fillArray(this->rootPtr, treeArray, index);
+	//Reads the tree to rebuilt it
+	readTree(treeArray, this->getNumberOfNodes());
+	//Deallocate memory set for the dynamic array
+	delete[] treeArray;
+	treeArray = nullptr;
+}
+
+/*
+Clears the current tree and rebuilds it based off the passed in array
+@param ItemType[] | array of ItemTypes that contain the node items from a tree
+@param int | ending index for the array
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::readTree(ItemType arr[], int n) {
+	//clear current tree and set root to nullptr
+	this->clear();
+	//build tree based off array for a balanced tree
+	this->rootPtr = buildTree(arr, 0, n);
+
+	//If the number of nodes are equal, then return true
+	if (this->getNumberOfNodes() == n) {
+		return true;
+	}
+
+	return false;
+}
+
+/*
+Fills the array using a in-order traversal
+@param - BinaryNode | rootPtr to a tree
+@param - ItemType[] | Passed in ItemType[] to fill
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::fillArray(BinaryNode<ItemType> *root, ItemType arr[], int & index) {
+	if (root == nullptr) {
+		return;
+	}
+	//In-order traversal
+	fillArray(root->getLeftChildPtr(), arr, index);
+	ItemType item = root->getItem();
+	//Appends the index of the array for each filled item
+	arr[index++] = item;
+	fillArray(root->getRightChildPtr(), arr, index);
+}
+
+/*
+Builds a balanced tree from an in-order traversal ItemType array
+@param - ItemType | array containing all nodes of the binary tree
+@param - int | ending index of the array
+@param - int | starting index of the array
+*/
+template<class ItemType>
+BinaryNode<ItemType>* BinarySearchTree<ItemType>::buildTree(ItemType arr[], int start, int end) {
+	if (start >= end) {
+		return nullptr;
+	}
+	//start from the middle of the array
+	int middle = start + (end - start) / 2;
+	//root node is set to the middle of the array, to ensure the first node built is not a leaf node
+	BinaryNode<ItemType> *root = new BinaryNode<ItemType>(arr[middle]);
+	//add all nodes from the left to the start to the middle
+	root->setLeftChildPtr(buildTree(arr, start, middle));
+	//add all the nodes from the right to the middle + 1 to the end
+	root->setRightChildPtr(buildTree(arr, middle + 1, end));
+
+
+}
+
+/*
+Comparison method which compares all the items of a tree and the structure of a tree.
+Helper function for the == operator overload.
+@param - BinaryNode | rootPtr to this tree
+@param - BinaryNode | rootPtr to the other tree
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::comparison(const BinaryNode<ItemType> *root, const BinaryNode<ItemType> *otherRoot) const {
+	//boolean variable as recursively comparison is used
+	bool equal = false;
+	//If both trees are empty return true
+	if (root == nullptr && otherRoot == nullptr) {
+		equal = true;
+	}
+	//If the root nodes have different items return false
+	else if (root->getItem() != otherRoot->getItem()) {
+		equal = false;
+	}
+	//Compares all items of both trees using pre-order traversal
+	else {
+		equal = comparison(root->getLeftChildPtr(), otherRoot->getLeftChildPtr());
+		equal = comparison(root->getRightChildPtr(), otherRoot->getRightChildPtr());
+
+	}
+	//Returns the recursive boolean value
+	return equal;
+}
+
+
+/*
+Helper function to display the sideways() function
+@param - none
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::displaySideways() const {
+	sideways(this->rootPtr, 0);
+}
+
+/*
+Prints out all nodes of the tree in a sideways formation
+@param - BinaryNode | rootPtr of the tree
+@param - int | level of the tree, should be 0
+*/
+template<class ItemType>
+void BinarySearchTree<ItemType>::sideways(BinaryNode<ItemType> *current, int level) const {
+	if (current != NULL) {
+		level++;
+		sideways(current->getRightChildPtr(), level);
+
+		// indent for readability, 4 spaces per depth level
+		for (int i = level; i >= 0; i--) {
+			cout << "    ";
+		}
+
+		cout << current->getItem() << endl;        // display information of object
+		sideways(current->getLeftChildPtr(), level);
+	}
+}
+
+/*
+Equality operator testing if the number of nodes and structure is equivalent
+@param BinarySearchTree | other Binary Search Tree to compare against
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::operator==(const BinarySearchTree<ItemType> &other) const {
+	//If number of nodes are different, return false.
+	if (this->getNumberOfNodes() != other.getNumberOfNodes()) {
+		return false;
+	}
+
+	else {
+		return comparison(rootPtr, other.getRoot());
+	}
+}
+
+/*
+Inequality operator that utilizes the existing == operator overload
+@param - BinarySearchTree | other binary search tree to compare against
+*/
+template<class ItemType>
+bool BinarySearchTree<ItemType>::operator!=(const BinarySearchTree<ItemType> &other) const {
+	//opposite of == overload
+	return !(*this == other);
+}
