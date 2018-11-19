@@ -1,0 +1,132 @@
+//@author Daniel Yan
+//@date November 16th, 2018
+//Simple Binary Tree with a getHeight() function
+//Variables / Functions are declared public for ease of use
+
+#include <iostream>
+#include <algorithm>
+class Node {
+public:
+	Node() {
+		//set left and right ptr to nullptr
+		this->left = this->right = nullptr;
+	}
+	Node *left;                     //left child
+	Node *right;                    //right child
+	std::string label;              //data item for string
+};
+
+class BT {
+public:
+	//Creates a new node with string data variable
+	Node * newNode(const std::string&);
+	//Gets the height of a node from a string
+	int getHeight(const std::string&);
+	//Helper function for getHeight()
+	int heightHelper(Node*, const std::string&);
+	//Finds the node from a node and a string
+	Node* findNode(Node*, const std::string&);
+	//rootPtr;
+	Node* rootPtr;
+};
+
+Node* BT::newNode(const std::string& data) {
+	Node* n = new Node();
+	n->label = data;
+	return n;
+}
+
+/************* BEGINNING OF HEIGHT CODE *******************/
+int BT::getHeight(const std::string& data) {
+	//Starts from rootPtr
+	return heightHelper(findNode(rootPtr, data), data);
+}
+
+//Determines height of a given node based on depth with recursion
+int BT::heightHelper(Node* node, const std::string& data) {
+	if (node == nullptr)
+		return 0;
+	int lDepth = 0, rDepth = 0;
+	//compute the depth of each subtree, ensure children aren't nullptr
+	if (node->left != nullptr)
+		lDepth = getHeight(node->left->label);
+	if (node->right != nullptr)
+		rDepth = getHeight(node->right->label);
+	//uses the larger one 
+	return std::max(lDepth + 1, rDepth + 1);
+}
+
+//Recursive node function to find a node from a string
+Node* BT::findNode(Node* current, const std::string& data) {
+	if (current != nullptr) {
+		if (current->label == data)
+			return current;
+		else {
+			//Go left first, temp due to unordered Binary Tree
+			Node* temp = findNode(current->left, data);
+			//Go right if left is nullptr
+			if (temp == nullptr)
+				temp = findNode(current->right, data);
+			//Return non-nullptr nodes
+			//if(temp != nullptr)
+			return temp;
+		}
+	}
+	return nullptr;
+}
+/************* END OF HEIGHT CODE *******************/
+
+
+int main() {
+	//Binary Tree contains the following: rootPtr*, unordered tree
+	BT sbt;
+	//Nodes contain the following: left*, right*, string label
+	Node* a = sbt.newNode("A");
+	Node* b = sbt.newNode("B");
+	Node* c = sbt.newNode("C");
+	Node* d = sbt.newNode("D");
+	Node* e = sbt.newNode("E");
+	Node* f = sbt.newNode("F");
+	Node* g = sbt.newNode("G");
+	Node* h = sbt.newNode("H");
+	Node* i = sbt.newNode("I");
+	Node* j = sbt.newNode("J");
+	Node* k = sbt.newNode("K");
+
+
+	sbt.rootPtr = a;
+	//left subtree
+	a->left = b;
+	a->left->left = d;
+	a->left->right = e;
+	a->left->left->left = h;
+	a->left->right->left = i;
+	//right subtree
+	a->right = c;
+	a->right->left = f;
+	a->right->right = g;
+	a->right->right->left = j;
+	a->right->right->right = k;
+
+	//quiz tests  
+	std::cout << "tree tests" << std::endl;
+	std::cout << "height for node h " << sbt.getHeight("H") << std::endl;
+	std::cout << "height for node e " << sbt.getHeight("E") << std::endl;
+	std::cout << "height for node c " << sbt.getHeight("C") << std::endl;
+	std::cout << "height for node a " << sbt.getHeight("A") << std::endl;
+	std::cout << "height for node z " << sbt.getHeight("Z") << std::endl;
+
+	//additional tests
+	std::cout << "\nadditional tests" << std::endl;
+	std::cout << "height for node b " << sbt.getHeight("B") << std::endl;
+	std::cout << "height for node d " << sbt.getHeight("D") << std::endl;
+	std::cout << "height for node f " << sbt.getHeight("F") << std::endl;
+	std::cout << "height for node g " << sbt.getHeight("G") << std::endl;
+	std::cout << "height for node i " << sbt.getHeight("I") << std::endl;
+	std::cout << "height for node j " << sbt.getHeight("J") << std::endl;
+	std::cout << "height for node k " << sbt.getHeight("K") << std::endl;
+	std::cout << "height for node x " << sbt.getHeight("X") << std::endl;
+	system("pause");
+	return 0;
+}
+
