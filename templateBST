@@ -1,0 +1,144 @@
+//@author Daniel Yan
+//@date November 17th, 2018
+// Simple templated Node and Binary tree for Quiz Question 1 in CSS 343
+#include <iostream>
+#include <string>
+
+
+template <class T>
+class Node {
+public:
+	T item;
+	Node<T> *left;
+	Node<T> *right;
+	Node<T>(T val) : item(val), left(nullptr), right(nullptr) {}
+
+};
+
+template <class T>
+class BST {
+	Node<T> * rootPtr;
+	void print(Node<T>*);
+	void deleteNodes(Node<T>*);
+
+
+public:
+	BST();
+	~BST();
+	void insert(T);
+	void print();
+	int helper(Node<T> *current, int &n) const;
+	int mystery() const;
+	void testMystery();
+
+};
+
+template <class T>
+BST<T>::BST() :rootPtr(nullptr) {}
+
+template <class T>
+BST<T>::~BST() {
+	deleteNodes(rootPtr);
+}
+
+template <class T>
+void BST<T>::deleteNodes(Node<T> *node) {
+	if (node == nullptr)
+		return;
+	if (node->left != nullptr)
+		deleteNodes(node->left);
+	if (node->right != nullptr)
+		deleteNodes(node->right);
+	delete node;
+}
+
+template <class T>
+void BST<T>::insert(T val) {
+	Node<T> *treeNode = new Node<T>(val);
+	Node<T> *temp = nullptr;
+	Node<T> *prev = nullptr;
+
+	temp = rootPtr;
+	while (temp != nullptr) {
+		prev = temp;
+		if (temp->item < treeNode->item)
+			temp = temp->right;
+		else
+			temp = temp->left;
+	}
+	if (prev == nullptr)
+		rootPtr = treeNode;
+	else
+	{
+		if (prev->item<treeNode->item)
+			prev->right = treeNode;
+		else
+			prev->left = treeNode;
+	}
+}
+
+template <class T>
+void BST<T>::print(Node<T> *root) {
+	if (root != nullptr)
+	{
+		print(root->left);
+		std::cout << root->item << std::endl;
+		print(root->right);
+	}
+}
+
+template <class T>
+void BST<T>::print() {
+	print(rootPtr);
+}
+
+/**********************BEGINNING OF MYSTERY CODE **********************/
+template <class T>
+int BST<T>::mystery() const {
+	int n = 0;
+	return helper(rootPtr, n);
+}
+
+// n passed by reference
+// Only edits made were adding std:: to cout and endl 
+template <class T>
+int BST<T>::helper(Node<T> *current, int &n) const {
+	std::cout << "M: " << n << " ";
+	if (current == nullptr)
+		std::cout << "NULL" << std::endl;
+	else
+		std::cout << current->item << std::endl;
+	n++;
+	if (current == nullptr)
+		return n;
+	if (current->right == nullptr)
+		return 1;
+	return helper(current->left, n) +
+		helper(current->right, n);
+}
+
+template <class T>
+void BST<T>::testMystery() {
+	BST<std::string> bst;
+	//Forming the tree structure
+	bst.insert("E");
+	bst.insert("B");
+	bst.insert("G");
+	bst.insert("A");
+	bst.insert("C");
+	bst.insert("I");
+	bst.insert("D");
+	bst.insert("H");
+	int result = bst.mystery();
+	std::cout << "Final: " << result << std::endl;
+}
+/**********************END OF MYSTERY CODE **********************/
+
+//As I made BST into a class, I need an object to call testMystery()
+int main() {
+	BST<std::string> tree;
+	tree.testMystery();
+
+	//Debugging purposes
+	//system("pause");
+}
